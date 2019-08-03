@@ -1,0 +1,19 @@
+13:58:17 **** Incremental Build of configuration Debug for project Practica3 ****
+make all 
+Building file: ../src/main.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.d" -o "src/main.o" "../src/main.cpp"
+../src/main.cpp: In function ‘int main(int, char**)’:
+../src/main.cpp:107:11: warning: unused variable ‘totalAvgErr’ [-Wunused-variable]
+    double totalAvgErr = 0;
+           ^
+Finished building: ../src/main.cpp
+ 
+Building target: Practica3
+Invoking: GCC C++ Linker
+g++  -o "Practica3"  ./src/main.o   -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_flann -lopencv_videoio
+Finished building target: Practica3
+ 
+13:58:22 **** Incremental Build of configuration Debug for project Practica3 ****
+make all 
+make: No se hace nada para 'all'.

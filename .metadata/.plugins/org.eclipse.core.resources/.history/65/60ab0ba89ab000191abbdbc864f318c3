@@ -1,0 +1,125 @@
+/*
+ * main.cpp
+ *
+ *  Created on: 27/07/2019
+ *      Author: davidsilva
+ */
+#include<iostream>
+#include<sstream>
+#include<string>
+#include<ctime>
+#include<cstdio>
+
+#include<opencv2/core.hpp>
+#include<opencv2/core/utility.hpp>
+#include<opencv2/imgproc.hpp>
+#include<opencv2/calib3d.hpp>
+#include<opencv2/imgcodecs.hpp>
+#include<opencv2/videoio.hpp>
+#include<opencv2/highgui.hpp>
+
+bool useFisheye = false ;
+int widthChessboard = 7;
+int heightChessboard = 5;
+int delay = 2000;
+int nrFrames = 15;
+
+
+enum Mode{
+	DETECTION = 0 , CAPTURING = 1 , CALIBRATED = 2
+};
+
+
+int main ( int argc , char ** argv ) {
+	cv::VideoCapture capture;
+	capture.open(0);
+
+	cv::Mat frame;
+
+
+	bool found;
+
+	int key;
+	const char ESC_KEY = 27;
+
+	int chessBoardFlags = cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE;
+	if (! useFisheye ) {
+	// fast check erroneously fails with high distortions like fisheye
+		chessBoardFlags |= cv::CALIB_CB_FAST_CHECK;
+	}
+
+	cv::Mat cameraMatrix, distCoeffs;
+	cv::Size imageSize;
+	std::vector<std::vector<cv::Point2f>> imagePoints;
+	cv::Size boardSize = cv::Size(widthChessboard, heightChessboard);
+	clock_t prevTimestamp = 0;
+	Mode mode = DETECTION;
+	const cv::Scalar RED(0,0,255), GREEN(0,255,0);
+
+	while(1){
+		bool blinkOutput = false;
+
+		capture.read(frame);
+		imageSize = frame.size();
+
+		if (mode == CAPTURING && imagePoints.size() >= (size_t) nrFrames) {
+			mode = CALIBRATED;
+		}
+
+		if (mode != CALIBRATED) {
+			//Find feature points on the input format
+			std::vector<cv::Point2f> pointBuf;
+			found = cv::findChessboardCorners(frame, boardSize, pointBuf, chessBoardFlags);
+
+			if(found){
+				// improve the found corners coordinate accuracy for chessboard
+				cv::Mat viewGray;
+				cv::cvtColor(frame, viewGray, cv::COLOR_BGR2GRAY);
+				cv::cornerSubPix(viewGray, pointBuf, cv::Size(11, 11), cv::Size(-1, -1), cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT , 30, 0.1));
+
+				if (mode == CAPTURING && // For camera only take new samples after delay time
+				   (clock()-prevTimestamp > delay * 1e-3 * CLOCKS_PER_SEC)){
+						imagePoints.push_back(pointBuf) ;
+						prevTimestamp = clock();
+						blinkOutput = true ;
+				}
+
+				// Draw the corners .
+				cv::drawChessboardCorners(frame, boardSize, cv::Mat(pointBuf), found);
+
+			}
+		}
+
+
+		std::string msg = (mode == CAPTURING) ? " 100/100 " : mode == CALIBRATED ? "Calibrated ":" Press ’g ’ to start ";
+		int baseLine = 0;
+
+		cv::Size textSize = cv::getTextSize(msg, 1, 1, 1, &baseLine);
+
+		cv::Point textOrigin(frame.cols - 2*textSize.width-10, frame.rows-2 * baseLine-10);
+
+		if(mode == CAPTURING)
+			msg = cv::format(" % d /% d " , (int)imagePoints.size(), nrFrames);
+
+		cv::putText(frame, msg, textOrigin, 1, 1, mode == CALIBRATED ? GREEN : RED);
+
+		if(blinkOutput)
+			cv::bitwise_not(frame, frame);
+
+
+		cv::imshow(" Frame ", frame);
+		key = cv::waitKey(1);
+
+		if(key == 'g'){
+			mode = CAPTURING ;
+			imagePoints.clear();
+		}
+
+
+		if(key == ESC_KEY)
+			break;
+
+	}
+	return 1;
+}
+

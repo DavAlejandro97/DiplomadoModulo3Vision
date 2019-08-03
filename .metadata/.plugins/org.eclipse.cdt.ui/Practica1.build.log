@@ -1,0 +1,15 @@
+10:32:33 **** Build of configuration Debug for project Practica1 ****
+make all 
+Building file: ../src/main.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.d" -o "src/main.o" "../src/main.cpp"
+Finished building: ../src/main.cpp
+ 
+Building target: Practica1
+Invoking: GCC C++ Linker
+g++  -o "Practica1"  ./src/main.o   -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_flann -lopencv_videoio
+Finished building target: Practica1
+ 
+
+10:32:38 Build Finished (took 4s.379ms)
+

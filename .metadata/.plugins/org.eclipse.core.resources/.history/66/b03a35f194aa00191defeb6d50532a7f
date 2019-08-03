@@ -1,0 +1,33 @@
+/*
+ * main.cpp
+ *
+ *  Created on: 19/07/2019
+ *      Author: davidsilva
+ */
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+
+int main(int argc, char ** argv) {
+	//	Tratamiento de una imagen
+	/*
+	cv::Mat image = cv::imread("opencv_screenshot.jpg");
+	cv::imshow("Frame OpenCV", image);
+	cv::waitKey(0);
+	*/
+
+	// Tratamiento de imagen obtenida por webcam
+	cv::VideoCapture capture;
+	capture.open(0);
+	cv::Mat frame;
+	int key;
+	while() {
+		capture.read(frame);
+		cv::imshow("Frame OpenCV", frame);
+		key = cv::waitKey(1);
+	}
+}
+
+
+

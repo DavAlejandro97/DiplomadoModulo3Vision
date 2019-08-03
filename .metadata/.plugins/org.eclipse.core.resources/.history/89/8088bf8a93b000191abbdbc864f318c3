@@ -1,0 +1,48 @@
+/*
+ * main.cpp
+ *
+ *  Created on: 27/07/2019
+ *      Author: davidsilva
+ */
+#include<iostream>
+#include<sstream>
+#include<string>
+#include<ctime>
+#include<cstdio>
+
+#include<opencv2/core.hpp>
+#include<opencv2/core/utility.hpp>
+#include<opencv2/imgproc.hpp>
+#include<opencv2/calib3d.hpp>
+#include<opencv2/imgcodecs.hpp>
+#include<opencv2/videoio.hpp>
+#include<opencv2/highgui.hpp>
+
+bool useFisheye = false ;
+int widthChessboard = 8;
+int heightChessboard = 6;
+int delay = 500;
+int nrFrames = 15;
+
+
+enum Mode {
+	DETECTION = 0 , CAPTURING = 1 , CALIBRATED = 2
+};
+
+
+int main ( int argc , char ** argv ) {
+cv::VideoCapture capture;
+capture.open(0);
+
+cv::Mat frame;
+
+
+bool found;
+
+int key;
+const char ESC_KEY = 27;
+
+
+
+
+
